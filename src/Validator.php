@@ -4,7 +4,7 @@
 namespace ElevenLab\Validation;
 
 
-use Illuminate\Contracts\Translation\Translator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Illuminate\Support\Arr;
 
 class Validator extends \Illuminate\Validation\Validator
@@ -12,13 +12,88 @@ class Validator extends \Illuminate\Validation\Validator
 
     protected $numericRules = ['Numeric', 'Integer', 'Float'];
 
-    public function __construct(Translator $translator, array $data, array $rules, array $messages = [], array $customAttributes = [])
+    public function __construct(TranslatorInterface $translator, array $data, array $rules, array $messages = [], array $customAttributes = [])
     {
-
-        $this->implicitRules[] = 'NullableIf';
 
         parent::__construct($translator, $data, $rules, $messages, $customAttributes);
 
+        $this->dependentRules[] = 'NullableIf';
+        $this->implicitRules[] = 'NullableIf';
+
+    }
+
+    /**
+     * Determine if the attribute is validatable.
+     *
+     * @param  string  $rule
+     * @param  string  $attribute
+     * @param  mixed   $value
+     * @return bool
+     */
+    protected function isValidatable($rule, $attribute, $value)
+    {
+
+        return $this->presentOrRuleIsImplicit($rule, $attribute, $value) &&
+            $this->passesOptionalCheck($attribute) &&
+            ($this->isNotNullIfMarkedAsNullable($attribute, $rule, $value)) &&
+            $this->hasNotFailedPreviousRuleIfPresenceRule($rule, $attribute);
+    }
+
+    /**
+     * Determine if the field is present, or the rule implies required.
+     *
+     * @param  string  $rule
+     * @param  string  $attribute
+     * @param  mixed   $value
+     * @return bool
+     */
+    protected function presentOrRuleIsImplicit($rule, $attribute, $value)
+    {
+        if (is_string($value) && trim($value) === '') {
+            return $this->isImplicit($rule);
+        }
+        return $this->validatePresent($attribute, $value) || $this->isImplicit($rule);
+    }
+
+
+    /**
+     * Determine if the attribute passes any optional check.
+     *
+     * @param  string  $attribute
+     * @return bool
+     */
+    protected function passesOptionalCheck($attribute)
+    {
+        if ($this->hasRule($attribute, ['Sometimes'])) {
+            $data = Arr::dot($this->initializeAttributeOnData($attribute));
+            $data = array_merge($data, $this->extractValuesForWildcards(
+                $data, $attribute
+            ));
+            return array_key_exists($attribute, $data)
+                || in_array($attribute, array_keys($this->data));
+        }
+        return true;
+    }
+
+    protected function isNullable($attribute)
+    {
+        return $this->hasRule($attribute, ['Nullable']);
+    }
+
+    /**
+     * Determine if the attribute fails the nullable check.
+     *
+     * @param  string  $attribute
+     * @param  string $rule
+     * @param  mixed  $value
+     * @return bool
+     */
+    protected function isNotNullIfMarkedAsNullable($attribute, $rule, $value)
+    {
+        if (! $this->isNullable($attribute) || $this->isImplicit($rule)) {
+            return true;
+        }
+        return ! is_null($value);
     }
 
     public function validateBoolean($attribute, $value)
@@ -71,7 +146,7 @@ class Validator extends \Illuminate\Validation\Validator
     {
         $this->requireParameterCount(1, $parameters, 'nullable_if');
 
-        $other = Arr::get($this->data, $parameters[0]);
+        $other = $this->getValue($parameters[0]);
 
         if(boolval($other) === true) {
             return true;
@@ -88,6 +163,17 @@ class Validator extends \Illuminate\Validation\Validator
         $regex = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/xi';
 
         return preg_match($regex, $value);
+    }
+
+    public function validateString($attribute, $value)
+    {
+        return is_string($value);
+    }
+
+    public function validateNullable($attribute, $value)
+    {
+        return true;
+
     }
 
 }

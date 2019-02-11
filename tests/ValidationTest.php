@@ -7,7 +7,6 @@ use Illuminate\Validation\ValidationException;
 use ElevenLab\Validation\RuleMapper;
 use ElevenLab\Validation\Spec;
 use ElevenLab\Validation\ValidationFactory;
-use Symfony\Component\Yaml\Yaml;
 
 class ValidationTest extends TestCase
 {
@@ -15,7 +14,6 @@ class ValidationTest extends TestCase
     public function typesDataProvider()
     {
 
-        //$vectors = Yaml::parseFile(__DIR__.'/../vendor/chainside/validation-testvectors/vectors.yaml', Yaml::PARSE_OBJECT_FOR_MAP);
         $data = file_get_contents(__DIR__.'/../vendor/chainside/validation-testvectors/vectors.json');
         $vectors = json_decode($data);
         $types = $vectors->types;
@@ -102,6 +100,7 @@ class ValidationTest extends TestCase
         $validator = ValidationFactory::make($value, $rules);
 
         $passes = $validator->passes();
+
         $this->assertEquals($success, $passes);
 
     }
@@ -114,7 +113,7 @@ class ValidationTest extends TestCase
 
         $rules = Spec::parse($spec)->toValidationArray();
 
-        $validator = ValidationFactory::make($data ?: [], $rules);
+        $validator = ValidationFactory::make($data, $rules);
 
         if(!$success) {
             $this->expectException(ValidationException::class);

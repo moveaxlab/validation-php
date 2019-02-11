@@ -234,7 +234,7 @@ class Spec implements Arrayable, Jsonable, \JsonSerializable
 
         if($this->type === self::TYPE_ARRAY) $prefix .= empty($prefix) ? '*' : '.*';
 
-        if($this->children()->isNotEmpty()) {
+        if(!$this->children()->isEmpty()) {
 
             foreach ($this->children() as $child) {
 

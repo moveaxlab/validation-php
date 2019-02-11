@@ -4,9 +4,6 @@ namespace ElevenLab\Validation;
 
 
 use ElevenLab\Validation\Rules\PhoneRule;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Translation\FileLoader;
-use Illuminate\Translation\Translator;
 use ElevenLab\Validation\Rules\Base58Rule;
 use ElevenLab\Validation\Rules\Base64EncodedFileRule;
 use ElevenLab\Validation\Rules\Base64Rule;
@@ -19,6 +16,9 @@ use ElevenLab\Validation\Rules\MaxSizeRule;
 use ElevenLab\Validation\Rules\MinSizeRule;
 use ElevenLab\Validation\Rules\MustBeTrueRule;
 use ElevenLab\Validation\Rules\SequenceRule;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Translation\FileLoader;
+use Illuminate\Translation\Translator;
 
 class ValidationFactory
 {
@@ -49,7 +49,7 @@ class ValidationFactory
      * @param mixed $data
      * @param array $rules
      *
-     * @return \Illuminate\Validation\Validator
+     * @return RuleValidator
      */
     public static function make($data, array $rules)
     {
@@ -67,7 +67,9 @@ class ValidationFactory
             'data' => $data
         ];
 
-        return $factory->make($data, $rules);
+        $validator = $factory->make($data, $rules);
+
+        return new RuleValidator($validator);
 
     }
 
