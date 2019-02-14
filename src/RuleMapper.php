@@ -13,6 +13,10 @@ class RuleMapper
         'equals_to', 'nullable_if'
     ];
 
+    const ALIAS_RULES = [
+        'regex'
+    ];
+
     protected $prefix;
 
     public function __construct($prefix = '')
@@ -38,6 +42,23 @@ class RuleMapper
         return !is_null(self::detectGlobalRule($rule));
     }
 
+    protected static function detectAliasRule($rule)
+    {
+        foreach (self::ALIAS_RULES as $aliasRule) {
+
+            if(Str::startsWith($rule, $aliasRule . '['))
+                return $aliasRule;
+
+        }
+
+        return null;
+    }
+
+    protected static function isAliasRule($rule)
+    {
+        return !is_null(self::detectAliasRule($rule));
+    }
+
     public function parseRuleFields($rule)
     {
 
@@ -50,6 +71,11 @@ class RuleMapper
         if(method_exists($this, $method)) return $this->$method($fields);
 
         return $fields;
+    }
+
+    public function convertAliasRule($rule)
+    {
+        return trim(preg_replace('/\s*\[[^)]*\]/', '', $rule));
     }
 
     public function setPrefix($prefix)
@@ -88,6 +114,10 @@ class RuleMapper
             $parameters = isset($ruleParts[1]) ? explode(',', $ruleParts[1]) : [];
         } else {
             $parameters = [ $ruleParts[1] ];
+        }
+
+        if($rule = self::detectAliasRule($ruleName)) {
+            $ruleName = $this->convertAliasRule($ruleName);
         }
 
         $method = Str::camel("map_{$ruleName}_rule");
@@ -305,7 +335,7 @@ class RuleMapper
 
     protected function mapRegexRule($pattern)
     {
-        return ["regex:/$pattern/"];
+        return ["regex:#$pattern#"];
     }
 
     protected function mapRequiredRule()
