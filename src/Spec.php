@@ -345,7 +345,7 @@ class Spec implements Arrayable, Jsonable, \JsonSerializable
             'rules' => $this->rules,
         ];
 
-        if($this->children()->isNotEmpty()) {
+        if(!$this->children()->isEmpty()) {
 
             $key = 'schema';
             if($this->type === self::TYPE_ARRAY) {
