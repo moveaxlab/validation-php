@@ -1,5 +1,5 @@
 {
-    "name": "elevenlab/validation-php",
+    "name": "moveaxlab/validation-php",
     "description": "Validation package based on Illuminate Validation",
     "type": "library",
     "license": "MIT",
