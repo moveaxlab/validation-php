@@ -14,7 +14,7 @@ class ValidationTest extends TestCase
     public function typesDataProvider()
     {
 
-        $data = file_get_contents(__DIR__.'/../vendor/chainside/validation-testvectors/vectors.json');
+        $data = file_get_contents(__DIR__.'/vectors.json');
         $vectors = json_decode($data);
         $types = $vectors->types;
         $provider = [];
@@ -49,7 +49,7 @@ class ValidationTest extends TestCase
     public function specsDataProvider()
     {
 
-        $data = file_get_contents(__DIR__.'/../vendor/chainside/validation-testvectors/vectors.json');
+        $data = file_get_contents(__DIR__.'/vectors.json');
         $vectors = json_decode($data, true);
         $specs = $vectors["specs"];
 

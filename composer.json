@@ -1,5 +1,5 @@
 {
-    "name": "elevenlab/validation-php",
+    "name": "moveaxlab/validation-php",
     "description": "Validation package based on Illuminate Validation",
     "type": "library",
     "license": "MIT",
@@ -19,8 +19,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0",
-        "symfony/var-dumper": "^4.2",
-        "chainside/validation-testvectors": "dev-master"
+        "symfony/var-dumper": "^4.2"
     },
     "autoload": {
         "psr-4": {
@@ -32,19 +31,5 @@
       "classmap": [
           "tests/TestCase.php"
       ]
-    },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "chainside/validation-testvectors",
-                "version": "dev-master",
-                "source": {
-                    "url": "git@bitbucket.org:chainside/validation-test-vectors.git",
-                    "type": "git",
-                    "reference": "master"
-                }
-            }
-        }
-    ]
+    }
 }
