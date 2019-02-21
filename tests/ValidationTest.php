@@ -14,9 +14,8 @@ class ValidationTest extends TestCase
 
     public function typesDataProvider()
     {
-
-        //$vectors = Yaml::parseFile(__DIR__.'/../vendor/chainside/validation-testvectors/vectors.yaml', Yaml::PARSE_OBJECT_FOR_MAP);
-        $data = file_get_contents(__DIR__.'/../vendor/chainside/validation-testvectors/vectors.json');
+        
+        $data = file_get_contents(__DIR__.'/vectors.json');
         $vectors = json_decode($data);
         $types = $vectors->types;
         $provider = [];
@@ -51,7 +50,7 @@ class ValidationTest extends TestCase
     public function specsDataProvider()
     {
 
-        $data = file_get_contents(__DIR__.'/../vendor/chainside/validation-testvectors/vectors.json');
+        $data = file_get_contents(__DIR__.'/vectors.json');
         $vectors = json_decode($data, true);
         $specs = $vectors["specs"];
 

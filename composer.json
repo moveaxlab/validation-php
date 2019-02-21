@@ -30,19 +30,5 @@
       "classmap": [
           "tests/TestCase.php"
       ]
-    },
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "chainside/validation-testvectors",
-                "version": "dev-master",
-                "source": {
-                    "url": "git@bitbucket.org:chainside/validation-test-vectors.git",
-                    "type": "git",
-                    "reference": "master"
-                }
-            }
-        }
-    ]
+    }
 }
